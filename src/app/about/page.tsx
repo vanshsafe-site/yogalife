@@ -24,14 +24,14 @@ export default function AboutPage() {
                 to create a holistic yoga experience.
               </p>
               <p className="text-muted-foreground italic">
-                "Yoga is not about touching your toes, it's about what you learn on the way down." - Yoga Sir
+                &ldquo;Yoga is not about touching your toes, it&apos;s about what you learn on the way down.&rdquo; - Yoga Sir
               </p>
             </div>
           </div>
           
           <h2 className="text-2xl font-semibold mb-4 text-card-foreground">Our Community</h2>
           <p className="text-muted-foreground">
-            We're proud to have built a welcoming community of practitioners from all walks of life. From beginners 
+            We&apos;re proud to have built a welcoming community of practitioners from all walks of life. From beginners 
             to advanced yogis, everyone is welcome to join our journey toward better health and inner peace. 
             Our referral program reflects our belief in growing together and sharing the benefits of yoga with friends and family.
           </p>
