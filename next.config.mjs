@@ -3,7 +3,7 @@ const nextConfig = {
   /* config options here */
   reactStrictMode: true,
   experimental: {
-    // Use SWC by default, don't fall back to Babel
+    // Ensure SWC is used for all transformations
     forceSwcTransforms: true
   },
   images: {
