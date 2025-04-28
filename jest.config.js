@@ -17,10 +17,8 @@ const customJestConfig = {
     '^@/models/(.*)$': '<rootDir>/src/models/$1',
   },
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
-  transform: {
-    // Use babel-jest to transpile tests with the next/babel preset
-    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
-  },
+  // Using Next.js's built-in SWC transformer instead of babel-jest
+  transform: {},
   transformIgnorePatterns: [
     '/node_modules/',
     '^.+\\.module\\.(css|sass|scss)$',
