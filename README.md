@@ -188,3 +188,6 @@ describe('API Route', () => {
 - [MongoDB](https://www.mongodb.com/) - Database
 - [Jest](https://jestjs.io/) - Testing framework
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) - Testing utilities
+
+## Latest Update
+Last updated: May 2, 2024
