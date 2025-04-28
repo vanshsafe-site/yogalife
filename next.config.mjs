@@ -2,8 +2,6 @@
 const nextConfig = {
   /* config options here */
   reactStrictMode: true,
-  // Explicitly enable SWC compiler
-  swcMinify: true,
   experimental: {
     // Use SWC by default, don't fall back to Babel
     forceSwcTransforms: true
