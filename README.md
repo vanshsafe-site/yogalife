@@ -1,36 +1,190 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Yoga Life Website
+
+A full-featured yoga website with user authentication, attendance tracking, referral program, reward system, and dashboards for users and administrators.
+
+## Features
+
+- **Static Pages**: Home, About, and Pricing pages with responsive design
+- **User Authentication**: Sign up and login with secure authentication
+- **User Dashboard**: Track attendance, view points, manage referrals
+- **Admin Dashboard**: Monitor users, activity, and statistics
+- **Attendance System**: Track user session duration via mouse movement detection
+- **Referral System**: Generate and track referral codes for new member acquisition
+- **Reward System**: Points for attendance and referrals, badges for attendance milestones
+
+## Tech Stack
+
+- **Frontend & Backend**: [Next.js](https://nextjs.org/) (App Router)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Database**: [MongoDB Atlas](https://www.mongodb.com/atlas/database)
+- **Deployment**: [Vercel](https://vercel.com/)
+
+## Project Structure
+
+```
+yoga-website/
+├── src/
+│   ├── app/              # Next.js app directory
+│   │   ├── (auth)/       # Authentication routes (grouped)
+│   │   │   ├── login/    # Login page
+│   │   │   └── signup/   # Signup page
+│   │   ├── (dashboard)/  # Dashboard routes (grouped)
+│   │   │   ├── dashboard/# User dashboard
+│   │   │   └── admin/    # Admin dashboard
+│   │   ├── about/        # About page
+│   │   ├── pricing/      # Pricing page
+│   │   ├── api/          # API routes
+│   │   └── page.tsx      # Home page
+│   ├── components/       # Reusable UI components
+│   ├── lib/              # Utility functions and libraries
+│   │   └── db/           # Database connection utilities
+│   └── models/           # Database models
+└── public/               # Static assets
+```
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18.x or later
+- npm or yarn
+- MongoDB Atlas account (for database)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd yoga-website
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Create a `.env.local` file in the root directory with the following environment variables:
+   ```
+   MONGODB_URI=your_mongodb_connection_string
+   NEXTAUTH_SECRET=your_nextauth_secret
+   NEXTAUTH_URL=http://localhost:3000
+   ```
+
+4. Start the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+
+## Deployment
+
+The app can be easily deployed to Vercel:
+
+1. Push your code to a GitHub repository
+2. Import the project to Vercel
+3. Set the environment variables in the Vercel dashboard
+4. Deploy
+
+## Demo Credentials
+
+For testing purposes, you can use the following credentials:
+
+- **Email**: demo@example.com
+- **Password**: password123
+
+## Future Enhancements
+
+- Email verification
+- Password reset functionality
+- Notifications system
+- Class scheduling and booking
+- Payment integration
+- Mobile app
+
+## Testing
+
+This project uses Jest and React Testing Library for testing components, pages, and API routes.
+
+### Running Tests
+
+To run all tests:
 
 ```bash
-npm run dev
+npm test
 # or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+yarn test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+To run tests in watch mode:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run test:watch
+# or
+yarn test:watch
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To run tests with coverage:
 
-## Learn More
+```bash
+npm run test:coverage
+# or
+yarn test:coverage
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Test Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Component tests: `src/components/__tests__/`
+- API tests: `src/app/api/**/route.test.ts`
+- Page tests: `src/app/**/__tests__/`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Writing Tests
 
-## Deploy on Vercel
+#### Component Tests
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Use React Testing Library to test components:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```tsx
+import { render, screen } from '@testing-library/react';
+import MyComponent from '../MyComponent';
+
+describe('MyComponent', () => {
+  it('renders correctly', () => {
+    render(<MyComponent />);
+    expect(screen.getByText('Expected Text')).toBeInTheDocument();
+  });
+});
+```
+
+#### API Tests
+
+Use Jest to test API routes:
+
+```tsx
+import { NextRequest } from 'next/server';
+import { GET, POST } from './route';
+
+describe('API Route', () => {
+  it('handles valid requests', async () => {
+    const req = new NextRequest('http://localhost:3000/api/example', {
+      method: 'POST',
+      body: JSON.stringify({ key: 'value' })
+    });
+    
+    const response = await POST(req);
+    expect(response.status).toBe(200);
+  });
+});
+```
+
+## Built With
+
+- [Next.js](https://nextjs.org/) - React framework
+- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
+- [MongoDB](https://www.mongodb.com/) - Database
+- [Jest](https://jestjs.io/) - Testing framework
+- [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) - Testing utilities
