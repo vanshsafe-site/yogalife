@@ -1,8 +1,13 @@
 import { MongoClient } from 'mongodb';
 
+// Verify environment variable exists and log diagnostic information
 if (!process.env.MONGODB_URI) {
-  throw new Error('Please add your MongoDB URI to .env.local');
+  console.error('Environment variables:', Object.keys(process.env).filter(key => !key.startsWith('npm_')));
+  throw new Error('MONGODB_URI is not defined in environment variables. Please add it to .env.local');
 }
+
+// Debug log - remove in production
+console.log('MongoDB URI found with length:', process.env.MONGODB_URI.length);
 
 const uri = process.env.MONGODB_URI;
 const options = {};
