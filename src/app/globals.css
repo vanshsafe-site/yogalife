@@ -3,14 +3,14 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-  --muted-foreground: #4b5563;
+  --foreground: #000000;
+  --muted-foreground: #333333;
   --primary: #1d4ed8;
   --primary-foreground: #ffffff;
   --accent: #eef2ff;
   --accent-foreground: #1e40af;
   --card: #ffffff;
-  --card-foreground: #1f2937;
+  --card-foreground: #000000;
   --font-family: 'Inter', sans-serif;
 }
 
@@ -46,6 +46,44 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-family), Arial, Helvetica, sans-serif;
+}
+
+/* Ensure all text on white/light backgrounds is black */
+input, 
+textarea, 
+select,
+.input,
+.textarea,
+.select {
+  color: #000000;
+}
+
+/* Force black text on white form elements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+textarea,
+select {
+  color: #000000 !important;
+  background-color: #ffffff;
+}
+
+/* Ensure text in cards/containers with white backgrounds is black */
+.bg-white *:not([class*="bg-"]):not(button):not(.btn):not([class*="text-"]) {
+  color: #000000;
+}
+
+/* Force black text in specific common components with white backgrounds */
+.card, 
+.container,
+.content,
+[class*="paper"],
+[class*="surface"],
+[class*="panel"] {
+  color: #000000;
 }
 
 /* Animation keyframes */
@@ -157,4 +195,83 @@ body {
 
 .animation-delay-900 {
   animation-delay: 900ms;
+}
+
+/* Additional form styling for login/signup pages */
+.login-form label,
+.signup-form label,
+form label {
+  color: #000000 !important;
+  font-weight: 500;
+}
+
+/* Ensure form field text is always black for readability */
+form input::placeholder,
+form textarea::placeholder {
+  color: #666666 !important;
+}
+
+/* Add a subtle border to form fields to enhance visibility */
+form input,
+form textarea,
+form select {
+  border: 1px solid #cecece;
+}
+
+/* Error messages should be very visible */
+.error-message,
+.form-error,
+[class*="error"] {
+  color: #d00000 !important;
+  font-weight: 500;
+}
+
+/* Success messages should be clearly visible */
+.success-message,
+[class*="success"] {
+  color: #007700 !important;
+  font-weight: 500;
+}
+
+/* Table styling for better visibility */
+table {
+  color: #000000;
+}
+
+table th {
+  color: #000000;
+  font-weight: 600;
+}
+
+table td {
+  color: #000000;
+}
+
+/* List styling */
+ul, ol {
+  color: #000000;
+}
+
+/* Dashboard elements */
+.dashboard-card,
+.stats-card,
+.profile-card,
+.attendance-list,
+.points-display {
+  color: #000000;
+}
+
+/* Buttons with light backgrounds should have dark text */
+button.bg-white,
+button.bg-light,
+button.bg-gray-100,
+button.bg-gray-200,
+.btn-light,
+[class*="btn-outline"] {
+  color: #000000 !important;
+}
+
+/* Ensure headers are always clearly visible */
+h1, h2, h3, h4, h5, h6 {
+  color: #000000;
 }
