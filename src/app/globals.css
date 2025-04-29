@@ -14,127 +14,76 @@
   --font-family: 'Inter', sans-serif;
 }
 
-/* Override dark mode completely */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #ffffff;
-    --foreground: #000000;
-    --muted-foreground: #333333;
-    --primary: #1d4ed8;
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --muted-foreground: #a3a3a3;
+    --primary: #3b82f6;
     --primary-foreground: #ffffff;
-    --accent: #eef2ff;
-    --accent-foreground: #1e40af;
-    --card: #ffffff;
-    --card-foreground: #000000;
+    --accent: #1e293b;
+    --accent-foreground: #93c5fd;
+    --card: #1a1a1a;
+    --card-foreground: #e5e5e5;
   }
 }
 
-/* Force white background and black text everywhere */
-html, body {
-  background-color: #ffffff !important;
-  color: #000000 !important;
+body {
+  background: var(--background);
+  color: var(--foreground);
   font-family: var(--font-family), Arial, Helvetica, sans-serif;
 }
 
-/* Ensure all text is black by default */
-* {
-  color: #000000;
-}
-
-/* Elements that should always have white text (buttons, etc.) */
-.bg-blue-600,
-.bg-blue-700,
-.bg-blue-800,
-.bg-blue-900,
-.bg-red-600,
-.bg-red-700,
-.bg-red-800,
-.bg-red-900,
-.bg-green-600,
-.bg-green-700,
-.bg-green-800,
-.bg-green-900,
-.bg-purple-600,
-.bg-purple-700,
-.bg-purple-800,
-.bg-purple-900,
-.bg-gray-700,
-.bg-gray-800,
-.bg-gray-900,
-.bg-primary {
-  color: #ffffff !important;
-}
-
-/* Force buttons with dark backgrounds to have white text */
-button.bg-blue-600,
-button.bg-blue-700,
-button.bg-blue-800,
-button.bg-red-600,
-button.bg-red-700,
-button.bg-green-600,
-button.bg-green-700,
-button.bg-purple-600,
-button.bg-purple-700,
-button.bg-gray-700,
-button.bg-gray-800,
-button.bg-gray-900,
-button.bg-primary,
-.btn-primary,
-.btn-danger,
-.btn-success {
-  color: #ffffff !important;
-}
-
-/* Make sure dark text shows on light containers */
-.bg-white,
-.bg-gray-50,
-.bg-gray-100,
-.bg-blue-50,
-.bg-green-50,
-.bg-yellow-50,
-.bg-purple-50 {
-  color: #000000 !important;
-}
-
-/* Override all card backgrounds to white with black text */
-.card,
-.container,
-.content,
-[class*="paper"],
-[class*="surface"],
-[class*="panel"] {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-}
-
-/* Ensure form elements have appropriate contrast */
+/* Ensure all text on white/light backgrounds is black */
 input, 
 textarea, 
 select,
 .input,
 .textarea,
 .select {
-  color: #000000 !important;
-  background-color: #ffffff !important;
+  color: #000000;
 }
 
-/* Table styling for better visibility */
-table {
+/* Force black text on white form elements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+textarea,
+select {
   color: #000000 !important;
+  background-color: #ffffff;
 }
 
-table th {
-  color: #000000 !important;
-  font-weight: 600;
+/* Ensure text in cards/containers with white backgrounds is black */
+.bg-white *:not([class*="bg-"]):not(button):not(.btn):not([class*="text-"]) {
+  color: #000000;
 }
 
-table td {
-  color: #000000 !important;
-}
-
-/* Ensure headers are always black */
-h1, h2, h3, h4, h5, h6 {
-  color: #000000 !important;
+/* Force black text in specific common components with white backgrounds */
+.card, 
+.container,
+.content,
+[class*="paper"],
+[class*="surface"],
+[class*="panel"] {
+  color: #000000;
 }
 
 /* Animation keyframes */
@@ -284,6 +233,25 @@ form select {
   font-weight: 500;
 }
 
+/* Table styling for better visibility */
+table {
+  color: #000000;
+}
+
+table th {
+  color: #000000;
+  font-weight: 600;
+}
+
+table td {
+  color: #000000;
+}
+
+/* List styling */
+ul, ol {
+  color: #000000;
+}
+
 /* Dashboard elements */
 .dashboard-card,
 .stats-card,
@@ -301,4 +269,9 @@ button.bg-gray-200,
 .btn-light,
 [class*="btn-outline"] {
   color: #000000 !important;
+}
+
+/* Ensure headers are always clearly visible */
+h1, h2, h3, h4, h5, h6 {
+  color: #000000;
 }
