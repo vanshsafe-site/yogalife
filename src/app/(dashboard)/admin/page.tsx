@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 // Mock data for demonstration
 const mockUsers = [
@@ -90,6 +91,7 @@ export default function AdminPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState<typeof mockUsers[0] | null>(null);
   const [showUserModal, setShowUserModal] = useState(false);
+  const router = useRouter();
   
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -124,9 +126,37 @@ export default function AdminPage() {
     setShowUserModal(false);
   };
   
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      // Redirect to login page
+      router.push('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {/* Logout button for admin */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={handleLogout}
+            className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm font-medium flex items-center"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm7 9a1 1 0 100-2H5a1 1 0 100 2h5zm-5-4a1 1 0 112 0 1 1 0 01-2 0z" clipRule="evenodd" />
+            </svg>
+            Logout
+          </button>
+        </div>
+        
         <div className="bg-white rounded-lg shadow">
           {/* Admin Header */}
           <div className="p-6 border-b">
