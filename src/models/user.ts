@@ -1,5 +1,5 @@
 export interface AttendanceRecord {
-  date: Date;
+  date: Date | string;
   durationMinutes: number;
   active: boolean;
 }

@@ -77,15 +77,19 @@ export async function GET(request: Request) {
         }
       ];
       
-      // Get recent activity (last 5 attendance records)
-      const recentActivity = user.attendance
-        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 5);
+      // Ensure dates are properly formatted
+      const formattedAttendance = Array.isArray(user.attendance) 
+        ? user.attendance.map((record: any) => ({
+            ...record,
+            date: record.date instanceof Date ? record.date.toISOString() : record.date
+          }))
+        : [];
       
       return NextResponse.json({
         ...userWithoutPassword,
         badges,
-        recentActivity
+        attendance: formattedAttendance,
+        joinDate: user.joinDate instanceof Date ? user.joinDate.toISOString() : user.joinDate
       });
     } catch (error) {
       console.error('Error parsing auth cookie:', error);

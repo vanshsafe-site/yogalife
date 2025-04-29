@@ -64,12 +64,25 @@ const mockUser: User = {
 
 // Helper function to format dates
 const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  }).format(date);
+  try {
+    // First handle the case where dateString might be a MongoDB ISODate string
+    const date = new Date(dateString);
+    
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      console.warn(`Invalid date format: ${dateString}`);
+      return 'Invalid date';
+    }
+    
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }).format(date);
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return 'Invalid date';
+  }
 };
 
 export default function DashboardPage() {
@@ -296,25 +309,25 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="bg-blue-50 rounded-lg p-5">
                   <h3 className="text-lg font-semibold text-gray-700">Total Days Attended</h3>
-                  <p className="text-3xl font-bold text-blue-600 mt-2">{user.daysAttended}</p>
+                  <p className="text-3xl font-bold text-blue-600 mt-2">{user.daysAttended || 0}</p>
                 </div>
                 
                 <div className="bg-green-50 rounded-lg p-5">
                   <h3 className="text-lg font-semibold text-gray-700">Points Earned</h3>
-                  <p className="text-3xl font-bold text-green-600 mt-2">{user.points}</p>
+                  <p className="text-3xl font-bold text-green-600 mt-2">{user.points || 0}</p>
                 </div>
                 
                 <div className="bg-purple-50 rounded-lg p-5">
                   <h3 className="text-lg font-semibold text-gray-700">Referrals</h3>
-                  <p className="text-3xl font-bold text-purple-600 mt-2">{user.referrals.length}</p>
+                  <p className="text-3xl font-bold text-purple-600 mt-2">{(user.referrals && user.referrals.length) || 0}</p>
                 </div>
                 
                 <div className="bg-yellow-50 rounded-lg p-5">
                   <h3 className="text-lg font-semibold text-gray-700">Next Badge</h3>
                   <div className="flex items-center mt-2">
-                    <span className="text-xl font-bold text-yellow-600">{user.badges[0].name}</span>
+                    <span className="text-xl font-bold text-yellow-600">{user.badges && user.badges[0] ? user.badges[0].name : 'Loading...'}</span>
                     <span className="ml-2 text-sm text-gray-600">
-                      ({user.badges[0].progress}/{user.badges[0].name.split(' ')[0]})
+                      {user.badges && user.badges[0] ? `(${user.badges[0].progress}/${user.badges[0].name.split(' ')[0]})` : ''}
                     </span>
                   </div>
                 </div>
@@ -331,7 +344,7 @@ export default function DashboardPage() {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {user.attendance.slice(0, 5).map((session, index) => (
+                        {user.attendance && user.attendance.slice(0, 5).map((session, index) => (
                           <tr key={index}>
                             <td className="px-4 py-3 whitespace-nowrap">{formatDate(session.date)}</td>
                             <td className="px-4 py-3 whitespace-nowrap">{session.durationMinutes} minutes</td>
@@ -342,6 +355,14 @@ export default function DashboardPage() {
                             </td>
                           </tr>
                         ))}
+                        
+                        {user.attendance.length === 0 && (
+                          <tr>
+                            <td colSpan={3} className="px-4 py-3 text-center text-gray-500">
+                              No attendance records found
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -362,7 +383,7 @@ export default function DashboardPage() {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {user.attendance.map((session, index) => (
+                      {user.attendance && user.attendance.map((session, index) => (
                         <tr key={index}>
                           <td className="px-4 py-3 whitespace-nowrap">{formatDate(session.date)}</td>
                           <td className="px-4 py-3 whitespace-nowrap">{session.durationMinutes} minutes</td>
@@ -373,6 +394,14 @@ export default function DashboardPage() {
                           </td>
                         </tr>
                       ))}
+                      
+                      {(!user.attendance || user.attendance.length === 0) && (
+                        <tr>
+                          <td colSpan={3} className="px-4 py-3 text-center text-gray-500">
+                            No attendance records found
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -406,7 +435,7 @@ export default function DashboardPage() {
                 </div>
                 
                 <h3 className="text-lg font-semibold text-gray-700 mb-4">Your Referrals</h3>
-                {user.referrals.length === 0 ? (
+                {(!user.referrals || user.referrals.length === 0) ? (
                   <p className="text-gray-500">You haven&apos;t referred anyone yet.</p>
                 ) : (
                   <div className="overflow-x-auto">

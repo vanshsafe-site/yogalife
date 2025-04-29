@@ -62,9 +62,10 @@ export async function POST(request: Request) {
       // Connect to database
       const db = await getDb();
       
-      // Create attendance record
+      // Create attendance record with ISO formatted date
+      const now = new Date();
       const attendanceRecord: AttendanceRecord = {
-        date: new Date(),
+        date: now.toISOString(), // Store as ISO string for consistent formatting
         durationMinutes,
         active: true
       };
