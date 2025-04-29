@@ -4,8 +4,40 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+// Define interfaces for our types
+interface AttendanceRecord {
+  date: string;
+  durationMinutes: number;
+  active: boolean;
+}
+
+interface Referral {
+  name: string;
+  date: string;
+  status: string;
+}
+
+interface Badge {
+  name: string;
+  earned: boolean;
+  progress: number;
+}
+
+interface User {
+  _id?: string;
+  name: string;
+  email: string;
+  joinDate: string;
+  points: number;
+  daysAttended: number;
+  referralCode: string;
+  referrals: Referral[];
+  attendance: AttendanceRecord[];
+  badges: Badge[];
+}
+
 // Mock user data as fallback
-const mockUser = {
+const mockUser: User = {
   name: 'Jane Doe',
   email: 'jane.doe@example.com',
   joinDate: '2023-01-15',
@@ -31,7 +63,7 @@ const mockUser = {
 };
 
 // Helper function to format dates
-const formatDate = (dateString) => {
+const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
@@ -42,7 +74,7 @@ const formatDate = (dateString) => {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState(mockUser);
+  const [user, setUser] = useState<User>(mockUser);
   const [activeTab, setActiveTab] = useState('overview');
   const [isAttending, setIsAttending] = useState(false);
   const [sessionTime, setSessionTime] = useState(0);
@@ -122,7 +154,6 @@ export default function DashboardPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user._id, // Assuming user._id is available
           durationMinutes: sessionTime
         }),
         credentials: 'include'
