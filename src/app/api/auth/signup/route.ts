@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { hash } from 'bcrypt';
 import { MongoClient } from 'mongodb';
-import clientPromise from '@/lib/db/mongodb';
+import clientPromise, { getDb } from '@/lib/db/mongodb';
 import { User, UserCollection } from '@/models/user';
 
 // Generate a unique referral code
@@ -23,64 +23,71 @@ export async function POST(request: Request) {
       );
     }
 
-    // Connect to database
-    const client: MongoClient = await clientPromise;
-    const db = client.db();
-    
-    // Check if user already exists
-    const existingUser = await db.collection(UserCollection).findOne({ email });
-    if (existingUser) {
+    try {
+      // Get database with default name
+      const db = await getDb();
+      
+      // Check if user already exists
+      const existingUser = await db.collection(UserCollection).findOne({ email });
+      if (existingUser) {
+        return NextResponse.json(
+          { error: 'User with this email already exists' },
+          { status: 409 }
+        );
+      }
+      
+      // Hash password
+      const hashedPassword = await hash(password, 10);
+      
+      // Generate referral code
+      const referralCode = generateReferralCode(name);
+      
+      // Create new user
+      const newUser: Omit<User, '_id'> = {
+        name,
+        email,
+        phone,
+        age: Number(age),
+        passwordHash: hashedPassword,
+        referralCode,
+        referredBy: referredBy || undefined,
+        points: referredBy ? 0 : 0, // We would add points to the referrer in a real app
+        attendance: [],
+        role: 'user',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      // Save user to database
+      const result = await db.collection(UserCollection).insertOne(newUser);
+      
+      // Update referrer's points if applicable
+      if (referredBy) {
+        await db.collection(UserCollection).updateOne(
+          { referralCode: referredBy },
+          { 
+            $inc: { points: 50 },
+            $set: { updatedAt: new Date() }
+          }
+        );
+      }
+      
+      // Return success response without sensitive data
       return NextResponse.json(
-        { error: 'User with this email already exists' },
-        { status: 409 }
+        {
+          message: 'User created successfully',
+          userId: result.insertedId,
+          referralCode
+        },
+        { status: 201 }
+      );
+    } catch (dbError) {
+      console.error('Database operation failed:', dbError);
+      return NextResponse.json(
+        { error: 'Database operation failed. Please try again later.' },
+        { status: 500 }
       );
     }
-    
-    // Hash password
-    const hashedPassword = await hash(password, 10);
-    
-    // Generate referral code
-    const referralCode = generateReferralCode(name);
-    
-    // Create new user
-    const newUser: Omit<User, '_id'> = {
-      name,
-      email,
-      phone,
-      age: Number(age),
-      passwordHash: hashedPassword,
-      referralCode,
-      referredBy: referredBy || undefined,
-      points: referredBy ? 0 : 0, // We would add points to the referrer in a real app
-      attendance: [],
-      role: 'user',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    
-    // Save user to database
-    const result = await db.collection(UserCollection).insertOne(newUser);
-    
-    // Update referrer's points if applicable
-    if (referredBy) {
-      await db.collection(UserCollection).updateOne(
-        { referralCode: referredBy },
-        { 
-          $inc: { points: 50 },
-          $set: { updatedAt: new Date() }
-        }
-      );
-    }
-    
-    // Return success response without sensitive data
-    return NextResponse.json(
-      {
-        message: 'User created successfully',
-        userId: result.insertedId,
-        referralCode
-      },
-      { status: 201 }
-    );
     
   } catch (error) {
     console.error('Error creating user:', error);
