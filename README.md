@@ -87,8 +87,26 @@ The app can be easily deployed to Vercel:
 
 1. Push your code to a GitHub repository
 2. Import the project to Vercel
-3. Set the environment variables in the Vercel dashboard
+3. Set the environment variables in the Vercel dashboard:
+   - Go to your project on Vercel
+   - Navigate to Settings > Environment Variables
+   - Add the following variables:
+     ```
+     MONGODB_URI=your_mongodb_connection_string
+     ```
 4. Deploy
+
+### Troubleshooting Login Issues on Vercel
+
+If the login functionality works locally but not on Vercel, check the following:
+
+1. **Environment Variables**: Ensure `MONGODB_URI` is properly set in Vercel's environment variables.
+
+2. **Cookie Settings**: The application uses HTTP-only cookies for authentication. Make sure third-party cookies are not blocked in your browser.
+
+3. **Database Connection**: Check the function logs in Vercel to see if there are any MongoDB connection errors.
+
+4. **Debug Mode**: You can enable debug logs by adding `DEBUG=true` to your Vercel environment variables.
 
 ## Demo Credentials
 

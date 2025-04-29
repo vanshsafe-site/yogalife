@@ -63,7 +63,9 @@ export default function LoginPage() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password
-        })
+        }),
+        // Important: include credentials to allow cookies to be set
+        credentials: 'include'
       });
       
       const data = await response.json();
@@ -72,17 +74,11 @@ export default function LoginPage() {
         throw new Error(data.error || 'Invalid email or password');
       }
       
-      // For demo purposes, we'll just use the email/password combination
-      // In a real app, you'd set cookies/session/JWT
-      
-      // This is only for demo purposes
-      localStorage.setItem('demoUser', JSON.stringify({
-        isAdmin: formData.email === 'admin@example.com',
-        email: formData.email
-      }));
+      // No need to set localStorage - the server sets an HTTP-only cookie
       
       // Redirect to the appropriate dashboard
-      if (formData.email === 'admin@example.com') {
+      // Using the data from the response to determine the redirect
+      if (data.user.email === 'admin@example.com') {
         router.push('/admin');
       } else {
         router.push('/dashboard');

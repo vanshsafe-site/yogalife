@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-// Mock user data for demonstration
+// Mock user data as fallback
 const mockUser = {
   name: 'Jane Doe',
   email: 'jane.doe@example.com',
@@ -29,12 +30,50 @@ const mockUser = {
   ]
 };
 
+// Helper function to format dates
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }).format(date);
+};
+
 export default function DashboardPage() {
+  const router = useRouter();
   const [user, setUser] = useState(mockUser);
   const [activeTab, setActiveTab] = useState('overview');
   const [isAttending, setIsAttending] = useState(false);
   const [sessionTime, setSessionTime] = useState(0);
   const [lastActivity, setLastActivity] = useState(Date.now());
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Fetch user data from API
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Use credentials: 'include' to send the auth cookie
+        const response = await fetch('/api/user/me', {
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+        
+        const userData = await response.json();
+        setUser(userData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        // If there's an error fetching user data, we'll use the mock data
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUserData();
+  }, []);
   
   // Track attendance when user is active
   useEffect(() => {
@@ -77,43 +116,71 @@ export default function DashboardPage() {
   const endAttendance = async () => {
     setIsAttending(false);
     
-    // This would be an API call in a real application
-    // await fetch('/api/attendance/mark', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     durationMinutes: sessionTime
-    //   })
-    // });
-    
-    // Update user state with new attendance
-    const newAttendance = {
-      date: new Date().toISOString().split('T')[0],
-      durationMinutes: sessionTime,
-      active: true
-    };
-    
-    setUser(prev => ({
-      ...prev,
-      daysAttended: prev.daysAttended + 1,
-      points: prev.points + 1, // 1 point per session
-      attendance: [newAttendance, ...prev.attendance]
-    }));
+    // Mark attendance in the backend
+    try {
+      const response = await fetch('/api/attendance/mark', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user._id, // Assuming user._id is available
+          durationMinutes: sessionTime
+        }),
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to record attendance');
+      }
+      
+      // Refresh user data to show updated attendance
+      const userData = await fetch('/api/user/me', {
+        credentials: 'include'
+      }).then(res => res.json());
+      
+      setUser(userData);
+      
+    } catch (error) {
+      console.error('Error recording attendance:', error);
+    }
   };
   
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      // Redirect to login page
+      router.push('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
   
-  const copyReferralCode = () => {
-    navigator.clipboard.writeText(user.referralCode);
-    alert('Referral code copied to clipboard!');
-  };
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-xl text-gray-700">Loading dashboard...</div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {/* Add logout button */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+          >
+            Logout
+          </button>
+        </div>
+        
         <div className="bg-white rounded-lg shadow">
           {/* User Header */}
           <div className="p-6 border-b">
@@ -293,7 +360,10 @@ export default function DashboardPage() {
                       className="flex-grow px-4 py-2 border border-gray-300 rounded-l-lg"
                     />
                     <button
-                      onClick={copyReferralCode}
+                      onClick={() => {
+                        navigator.clipboard.writeText(user.referralCode);
+                        alert('Referral code copied to clipboard!');
+                      }}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-lg"
                     >
                       Copy

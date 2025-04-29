@@ -50,12 +50,30 @@ export async function POST(request: Request) {
       // Remove sensitive data before sending response
       const { passwordHash, ...userWithoutPassword } = user;
       
-      // In a real app, you would set a session or JWT token here
-      
-      return NextResponse.json({
+      // Create a response with the user data
+      const response = NextResponse.json({
         message: 'Login successful',
         user: userWithoutPassword
       });
+      
+      // Set a secure HTTP-only cookie with user info
+      // This is more secure than localStorage
+      response.cookies.set({
+        name: 'auth',
+        value: JSON.stringify({
+          userId: user._id.toString(),
+          email: user.email,
+          isAdmin: user.email === 'admin@example.com',
+        }),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
+        // Expire in 7 days
+        maxAge: 60 * 60 * 24 * 7
+      });
+      
+      return response;
     } catch (dbError) {
       console.error('Database operation failed:', dbError);
       return NextResponse.json(

@@ -115,7 +115,7 @@ describe('Login Page', () => {
     const form = screen.getByRole('button', { name: /log in/i }).closest('form');
     fireEvent.submit(form!); // Use non-null assertion as we know the form exists
     
-    // Check for API call
+    // Check for API call with credentials: 'include'
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith('/api/auth/login', {
         method: 'POST',
@@ -123,7 +123,8 @@ describe('Login Page', () => {
         body: JSON.stringify({
           email: 'test@example.com',
           password: 'password123'
-        })
+        }),
+        credentials: 'include'
       });
     });
     
@@ -132,11 +133,8 @@ describe('Login Page', () => {
       expect(routerPushMock).toHaveBeenCalledWith('/dashboard');
     });
     
-    // Check localStorage was set
-    expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'demoUser',
-      expect.any(String)
-    );
+    // We no longer use localStorage
+    expect(localStorageMock.setItem).not.toHaveBeenCalled();
   });
 
   it('handles failed login attempt', async () => {
@@ -160,6 +158,19 @@ describe('Login Page', () => {
     // Submit form
     const form = screen.getByRole('button', { name: /log in/i }).closest('form');
     fireEvent.submit(form!);
+    
+    // Check API call with credentials: 'include'
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'test@example.com',
+          password: 'wrongpassword'
+        }),
+        credentials: 'include'
+      });
+    });
     
     // Check for error message
     await waitFor(() => {
@@ -194,16 +205,26 @@ describe('Login Page', () => {
     const form = screen.getByRole('button', { name: /log in/i }).closest('form');
     fireEvent.submit(form!);
     
+    // Check API call with credentials: 'include'
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'admin@example.com',
+          password: 'admin123'
+        }),
+        credentials: 'include'
+      });
+    });
+    
     // Check for redirect to admin dashboard
     await waitFor(() => {
       expect(routerPushMock).toHaveBeenCalledWith('/admin');
     });
     
-    // Check localStorage was set with admin flag
-    expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'demoUser',
-      expect.any(String)
-    );
+    // We no longer use localStorage
+    expect(localStorageMock.setItem).not.toHaveBeenCalled();
   });
 
   it('allows auto-fill of demo credentials', () => {
