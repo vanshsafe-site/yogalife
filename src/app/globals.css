@@ -48,7 +48,7 @@ body {
   font-family: var(--font-family), Arial, Helvetica, sans-serif;
 }
 
-/* Ensure all text on white/light backgrounds is black */
+/* Ensure text on white/light backgrounds is black */
 input, 
 textarea, 
 select,
@@ -58,7 +58,20 @@ select,
   color: #000000;
 }
 
-/* Force black text on white form elements */
+/* Ensure text on dark backgrounds is white */
+.bg-gray-800 *:not([class*="bg-"]):not(button):not(.btn):not([class*="text-"]),
+.bg-gray-900 *:not([class*="bg-"]):not(button):not(.btn):not([class*="text-"]),
+.bg-blue-800 *:not([class*="bg-"]):not(button):not(.btn):not([class*="text-"]),
+.bg-blue-900 *:not([class*="bg-"]):not(button):not(.btn):not([class*="text-"]),
+.bg-purple-800 *:not([class*="bg-"]):not(button):not(.btn):not([class*="text-"]),
+.bg-purple-900 *:not([class*="bg-"]):not(button):not(.btn):not([class*="text-"]),
+.bg-green-800 *:not([class*="bg-"]):not(button):not(.btn):not([class*="text-"]),
+.bg-green-900 *:not([class*="bg-"]):not(button):not(.btn):not([class*="text-"]),
+.bg-primary *:not([class*="bg-"]):not(button):not(.btn):not([class*="text-"]) {
+  color: #ffffff;
+}
+
+/* Force form elements to have appropriate contrast */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -76,13 +89,80 @@ select {
   color: #000000;
 }
 
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  /* Reverse text color on dark backgrounds */
+  .bg-white,
+  .bg-slate-50,
+  .bg-gray-50,
+  .bg-gray-100,
+  .bg-blue-50,
+  .bg-purple-50,
+  .bg-green-50,
+  .bg-yellow-50 {
+    color: #000000;
+  }
+  
+  /* Fix text on dark backgrounds */
+  .bg-gray-700,
+  .bg-gray-800,
+  .bg-gray-900,
+  .bg-slate-700,
+  .bg-slate-800,
+  .bg-slate-900,
+  .bg-blue-700,
+  .bg-blue-800,
+  .bg-blue-900,
+  .bg-green-700,
+  .bg-green-800,
+  .bg-green-900,
+  .bg-purple-700,
+  .bg-purple-800,
+  .bg-purple-900,
+  .bg-red-700,
+  .bg-red-800, 
+  .bg-red-900 {
+    color: #ffffff;
+  }
+  
+  /* Fix text in cards for dark mode */
+  .card, 
+  .container,
+  .content,
+  [class*="paper"],
+  [class*="surface"],
+  [class*="panel"] {
+    color: var(--card-foreground);
+  }
+  
+  /* Fix tables for dark mode */
+  table {
+    color: var(--foreground);
+  }
+  
+  table th {
+    color: var(--foreground);
+  }
+  
+  table td {
+    color: var(--foreground);
+  }
+  
+  /* Fix form labels for dark mode */
+  .login-form label,
+  .signup-form label,
+  form label {
+    color: var(--foreground) !important;
+  }
+}
+
 /* Force black text in specific common components with white backgrounds */
-.card, 
-.container,
-.content,
-[class*="paper"],
-[class*="surface"],
-[class*="panel"] {
+.bg-white .card, 
+.bg-white .container,
+.bg-white .content,
+.bg-white [class*="paper"],
+.bg-white [class*="surface"],
+.bg-white [class*="panel"] {
   color: #000000;
 }
 
@@ -201,7 +281,6 @@ select {
 .login-form label,
 .signup-form label,
 form label {
-  color: #000000 !important;
   font-weight: 500;
 }
 
