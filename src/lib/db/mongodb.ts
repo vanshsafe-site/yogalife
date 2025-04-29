@@ -8,14 +8,13 @@ if (!process.env.MONGODB_URI) {
 
 // Debug log - remove in production
 console.log('MongoDB URI found with length:', process.env.MONGODB_URI.length);
+console.log('Attempting to connect to MongoDB...');
 
 const uri = process.env.MONGODB_URI;
 // Default database name if not specified in URI
 const DEFAULT_DB = 'yogalife';
-const options = {
-  connectTimeoutMS: 10000, // 10 seconds
-  socketTimeoutMS: 45000,  // 45 seconds
-};
+// Using minimal options for better compatibility
+const options = {};
 
 let client;
 let clientPromise: Promise<MongoClient>;
@@ -29,32 +28,51 @@ try {
     };
 
     if (!globalWithMongo._mongoClientPromise) {
+      console.log('Creating new MongoDB client instance in development mode');
       client = new MongoClient(uri, options);
       globalWithMongo._mongoClientPromise = client.connect()
+        .then(client => {
+          console.log('Successfully connected to MongoDB');
+          return client;
+        })
         .catch(err => {
           console.error('Failed to connect to MongoDB:', err);
+          console.error('Error details:', JSON.stringify(err, null, 2));
           throw err;
         });
     }
     clientPromise = globalWithMongo._mongoClientPromise;
   } else {
     // In production mode, it's best to not use a global variable.
+    console.log('Creating new MongoDB client instance in production mode');
     client = new MongoClient(uri, options);
     clientPromise = client.connect()
+      .then(client => {
+        console.log('Successfully connected to MongoDB');
+        return client;
+      })
       .catch(err => {
         console.error('Failed to connect to MongoDB:', err);
+        console.error('Error details:', JSON.stringify(err, null, 2));
         throw err;
       });
   }
 } catch (error) {
   console.error('Error initializing MongoDB connection:', error);
+  console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace available');
   throw error;
 }
 
 // Helper function to get database with default name
 export const getDb = async (dbName = DEFAULT_DB) => {
-  const client = await clientPromise;
-  return client.db(dbName);
+  try {
+    const client = await clientPromise;
+    console.log(`Getting database: ${dbName}`);
+    return client.db(dbName);
+  } catch (error) {
+    console.error(`Error getting database ${dbName}:`, error);
+    throw error;
+  }
 };
 
 // Export a module-scoped MongoClient promise. By doing this in a
